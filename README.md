@@ -1,25 +1,29 @@
-# Variable Pitch Fan (VPF) Turbofan — Final Degree Project (TFG)
+# VPF Turbofan Analytical Study (TFG)
 
-## Project overview
-This repository documents a Final Degree Project (TFG) in Aerospace Engineering focused on a
-Variable Pitch Fan (VPF) turbofan. The goal is to organize research artifacts and project
-knowledge in a clear, academic format.
+Este repositorio contiene un programa analítico para explorar cómo cambian las prestaciones de
+un turbofan con Ventilador de Paso Variable (VPF) al modificar:
 
-## Purpose
-The repository is used to capture the project narrative, scope, and methodology for the VPF
-study. It serves as a structured reference for research context, constraints, and intended
-analysis workflows.
+- El ángulo de ataque/ incidencia de los álabes.
+- La velocidad de operación (Mach).
 
-## Scope and limitations
-- The repository is a research-focused record of a student project.
-- It does not claim industrial certification or validated design results.
-- The content is intentionally limited to project documentation.
+El objetivo es generar gráficas relevantes para el TFG (eficiencia, empuje específico, variación
+sintética de drag, y curvas de sustentación simplificadas frente a alfa), con un modelo claro y
+extensible.
 
-## Tools and technologies
-- Git for version control
-- Markdown for documentation
+## Contenido
+- `src/turbofan_vpf/`: modelos analíticos y utilidades.
+- `scripts/run_analysis.py`: ejecuta barridos paramétricos y exporta gráficos.
+- `results/`: salida de gráficas y CSV.
 
-## Constraints
-- Only two branches exist: `main` for stable code and `settings` for documentation.
-- Documentation is stored exclusively in the `settings` branch.
-- This branch intentionally contains only this README.
+## Ejecución rápida
+
+```bash
+python -m pip install -e .
+python scripts/run_analysis.py --mach 0.6 0.85 1.1 --alpha -2 2 6 10
+```
+
+Las gráficas se guardan en `results/`.
+
+## Notas de modelado
+Este código utiliza correlaciones analíticas simplificadas, pensadas para estudios conceptuales.
+No sustituye una validación CFD ni un diseño certificado.
