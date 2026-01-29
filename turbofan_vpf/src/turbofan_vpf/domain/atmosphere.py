@@ -24,65 +24,65 @@ This module does NOT:
 - Include CFD-specific assumptions
 """
 
-#Imports
 from __future__ import annotations
 from dataclasses import dataclass
 import math
 
-#Physical constants (SI units)
+
+# Physical constants (SI units)
 GAMMA_AIR = 1.4              # Ratio of specific heats [-]
 R_AIR = 287.05               # Specific gas constant for air [J/(kg·K)]
 G0 = 9.80665                 # Gravitational acceleration [m/s^2]
 
-#Definition of dataclass for atmosphere state
-@dataclass(frozen=True)      # Immutable dataclass for atmospheric state
+# Validity limits for the implemented ISA model
+TROPOSPHERE_LIMIT = 11_000.0  # [m]
+
+
+@dataclass(frozen=True)
 class AtmosphereState:
     """
     Dataclass representing the state of the atmosphere at a given altitude.
-
-    Attributes:
-        altitude (float): Altitude above sea level [m].
-        temperature (float): Temperature [K].
-        pressure (float): Pressure [Pa].
-        density (float): Density [kg/m^3].
     """
+
     altitude: float         # [m]
     temperature: float      # [K]
     pressure: float         # [Pa]
     density: float          # [kg/m^3]
 
-#Definition of property to calculate speed of sound. Useful for calculating Mach number.
-@property
-def speed_of_sound(self) -> float:
-    """
-    Calculate the speed of sound at the current atmospheric state.
+    # Definition of physical consistency validation
+    def validate(self) -> None:
+        if self.altitude < 0.0:
+            raise ValueError("Altitude must be non-negative.")
+        if self.temperature <= 0.0:
+            raise ValueError("Temperature must be positive.")
+        if self.pressure <= 0.0:
+            raise ValueError("Pressure must be positive.")
+        if self.density <= 0.0:
+            raise ValueError("Density must be positive.")
 
-    Returns:
-        float: Speed of sound [m/s].
-    """
-    return math.sqrt(GAMMA_AIR * R_AIR * self.temperature)
+    # Definition of speed of sound
+    @property
+    def speed_of_sound(self) -> float:
+        return math.sqrt(GAMMA_AIR * R_AIR * self.temperature)
 
-#Definition of property to calculate dynamic viscosity using Sutherland's law
-@property
-def dynamic_viscosity(self) -> float:
-    """
-    Returns the dynamic viscosity using Sutherland's law.
-    """
-    T_ref = 273.15      # [K]
-    mu_ref = 1.716e-5   # [Pa·s]
-    S = 110.4           # [K]
+    # Definition of dynamic viscosity using Sutherland's law
+    @property
+    def dynamic_viscosity(self) -> float:
+        T_ref = 273.15      # [K]
+        mu_ref = 1.716e-5   # [Pa·s]
+        S = 110.4           # [K]
 
-    return mu_ref * (self.temperature / T_ref) ** 1.5 * (
-        (T_ref + S) / (self.temperature + S)
-    )
+        return mu_ref * (self.temperature / T_ref) ** 1.5 * (
+            (T_ref + S) / (self.temperature + S)
+        )
 
-# Validity limits for the implemented ISA model
-TROPOSPHERE_LIMIT = 11_000.0  # [m]
 
-#Definition of ISA atmosphere model
+# Definition of ISA atmosphere model (troposphere only)
 def isa_atmosphere(altitude: float) -> AtmosphereState:
     """
-    Computes the International Standard Atmosphere (ISA) porperties for the troposphere (up to 11 km).
+    Computes the International Standard Atmosphere (ISA) properties for the
+    troposphere (up to 11 km).
+
     References:
     - ISO 2533:1975: Standard Atmosphere
     - Anderson, J.D., Introduction to Flight, 7th Edition, McGraw-Hill, 2005.
@@ -98,18 +98,21 @@ def isa_atmosphere(altitude: float) -> AtmosphereState:
     p0 = 101325.0             # Sea level standard pressure [Pa]
     lapse_rate = -0.0065      # Temperature lapse rate [K/m]
 
-    # Calculate temperature at altitude using lapse rate
+    # Temperature at altitude
     temperature = T0 + lapse_rate * altitude
 
-    # Calculate pressure using hydrostatic equilibrium
+    # Pressure from hydrostatic equilibrium
     pressure = p0 * (temperature / T0) ** (-G0 / (lapse_rate * R_AIR))
-    
-    # Calculate density using ideal gas law
+
+    # Density from ideal gas law
     density = pressure / (R_AIR * temperature)
 
-    return AtmosphereState(
+    state = AtmosphereState(
         altitude=altitude,
         temperature=temperature,
         pressure=pressure,
-        density=density
+        density=density,
     )
+    state.validate()
+
+    return state
