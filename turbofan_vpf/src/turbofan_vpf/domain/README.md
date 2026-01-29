@@ -2,91 +2,151 @@
 
 ## Purpose
 
-The `domain` folder contains the core physical and conceptual definitions
-of the project. It represents the **problem domain**, independent of any
-numerical method, aerodynamic model, or CFD implementation.
+The `domain` folder contains the core physical definitions of the project.
+It represents the **conceptual and physical domain** of the problem,
+independent of numerical methods, aerodynamic solvers, or CFD tools.
 
 This layer defines *what the problem is*, not *how it is solved*.
 
-In the context of this project, the domain layer provides a rigorous and
-consistent physical framework to study the aerodynamic implications of
-Variable Pitch Fan (VPF) concepts compared to fixed-pitch configurations.
+In this project, the domain layer provides a rigorous and physically
+consistent framework to analyze how **variable blade pitch** affects
+aerodynamic incidence and performance in a turbofan fan stage, compared
+to a fixed-pitch configuration.
 
 ---
 
 ## Design Philosophy
 
-The domain layer follows these fundamental principles:
+The domain layer follows principles commonly adopted in graduate-level and
+doctoral research software:
 
-- **Physics-first design**  
-  All entities represent real physical concepts used in aerospace
-  engineering (flow state, blade kinematics, incidence).
+- **Physics-first abstraction**  
+  All modules represent real physical concepts used in aerospace
+  engineering (flow state, blade kinematics, incidence, operating
+  conditions).
 
 - **Separation of concerns**  
-  Domain objects do not perform detailed aerodynamic or CFD calculations.
-  They define the physical state and relationships required by higher-level
-  models.
+  No aerodynamic force models, CFD solvers, or performance calculations
+  are implemented here. The domain defines the physical entities that
+  higher-level models operate on.
 
-- **Immutability and clarity**  
-  Domain objects are designed to be immutable or explicitly transformed,
-  ensuring reproducibility and traceability of results.
+- **Explicit assumptions**  
+  All physical quantities are dimensional, and assumptions are made
+  explicit to ensure traceability and reproducibility.
 
-- **Solver independence**  
-  No dependency on CFD solvers, meshing tools, or numerical discretization
-  schemes is allowed in this layer.
+- **Solver and model independence**  
+  The domain layer is completely independent of CFD, airfoil databases,
+  or numerical discretization schemes.
 
 ---
 
 ## Role in the Variable Pitch Fan Study
 
-The central scientific objective of this project is to evaluate how
-variable blade pitch can maintain optimal aerodynamic incidence across
-different flight conditions.
+The central scientific objective of this project is to evaluate whether
+**variable pitch fan blades** can maintain near-optimal aerodynamic
+incidence across a wide range of operating conditions.
 
-To achieve this, the domain layer ensures that:
+To enable a rigorous comparison between fixed-pitch and variable-pitch
+configurations, the domain layer ensures that:
 
-- The **flow conditions** are defined consistently for all analyses
-- The **blade pitch variation** is introduced explicitly and independently
-- Changes in aerodynamic performance can be directly linked to variations
-  in blade incidence rather than changes in flow definition
+- Flow conditions are defined consistently for all analyses
+- Blade pitch and orientation are introduced explicitly and independently
+- Blade incidence is treated as a first-class physical quantity
+- Changes in aerodynamic behavior can be directly attributed to pitch
+  variation rather than inconsistencies in flow definition
 
-This approach enables a rigorous comparison between fixed-pitch and
-variable-pitch fan configurations under identical operating conditions.
+This separation is essential to isolate the aerodynamic benefits of
+variable pitch concepts in a scientifically defensible manner.
 
 ---
 
-## Typical Contents
+## Module Overview
 
-The `domain` folder typically includes:
+The `domain` folder currently includes the following modules:
 
-- `flow_state.py`  
-  Definition of the thermodynamic and kinematic state of the airflow.
+### `atmosphere.py`
 
-- `blade_kinematics.py`  
-  Description of blade pitch, stagger, and geometric orientation.
+Defines atmospheric models and boundary conditions used to derive flow
+properties as a function of altitude or flight condition.
 
-- `reference_frames.py` (future extension)  
-  Definitions for absolute and relative frames of reference.
+This module provides idealized atmospheric representations (e.g. ISA)
+and does not perform any aerodynamic or performance calculations.
 
-Each module is designed to be reusable across multiple analyses, including
-2D blade studies, cascade analyses, and preliminary fan-level models.
+---
+
+### `flow_state.py`
+
+Defines the **thermodynamic and kinematic state of the airflow**, including
+quantities such as pressure, temperature, density, velocity, Mach number,
+and Reynolds number.
+
+The flow state is defined independently of blade geometry or pitch and
+represents the incoming flow experienced by the fan blade.
+
+---
+
+### `blade_kinematics.py`
+
+Defines the geometric and kinematic orientation of a blade, including
+pitch angle, stagger angle, and chord-line orientation.
+
+This module formalizes how blade pitch is represented in the model and
+provides the geometric basis for incidence analysis.
+
+---
+
+### `incidence.py`
+
+Provides a formal definition of **blade incidence** as the relative angle
+between the incoming flow direction and the blade chord line.
+
+Incidence is treated as a fundamental physical quantity and represents
+the key variable through which the aerodynamic impact of variable pitch
+is evaluated.
+
+---
+
+### `operating_condition.py`
+
+Defines a complete **operating or flight condition**, linking atmospheric
+properties, flow state, and blade kinematics under a consistent physical
+context.
+
+This module enables parametric studies across different flight regimes
+(e.g. takeoff, climb, cruise) while maintaining a clear separation
+between flow definition and blade geometry.
+
+---
+
+## Typical Use Within the Project
+
+The domain layer is used as the foundation for:
+
+- 2D blade and cascade analyses
+- Parametric pitch and incidence sweeps
+- Preliminary fan-level studies
+- CFD-oriented pre- and post-processing workflows
+
+Higher-level layers of the project consume domain objects to perform
+aerodynamic modeling, numerical simulations, and performance evaluation.
 
 ---
 
 ## What This Layer Does Not Contain
 
-- CFD solvers or turbulence models
-- Empirical airfoil data
-- Numerical optimization routines
-- Geometry generation
+The `domain` folder intentionally excludes:
 
-These aspects are intentionally delegated to higher-level layers of the
-project.
+- Aerodynamic force or moment models
+- CFD solvers or turbulence models
+- Empirical airfoil databases
+- Optimization or performance evaluation routines
+
+These aspects belong to higher-level layers of the project.
 
 ---
 
 ## Academic Context
 
-This structure reflects best practices in scientific software development
-and is commonly adopted in graduate-level and doctoral research to ensure
-clarity, extensibility, and physical rigor.
+This domain structure reflects best practices in scientific and aerospace
+engineering software development and is designed to support work at
+advanced undergraduate, graduate, and doctoral research levels.
