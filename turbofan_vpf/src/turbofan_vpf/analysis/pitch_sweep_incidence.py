@@ -174,7 +174,7 @@ def main() -> None:
     # Show only if a GUI backend is available
     try:
         plt.show()
-    except Exception:
+    except RuntimeError:
         pass
 
 
