@@ -80,6 +80,11 @@ class BladeKinematics:
                 f"out of bounds [{min_pitch_deg}°, {max_pitch_deg}°]."
             )
         
+        if not -math.pi <= self.stagger_angle <= math.pi:
+            raise ValueError(
+                "Stagger angle must be within a reasonable angular range [-π, π]."
+            )
+
         if not 0.0 < self.r_over_R <= 1.0:
             raise ValueError(
                 f"Non-dimensional radial position r/R = {self.r_over_R:.3f} "
