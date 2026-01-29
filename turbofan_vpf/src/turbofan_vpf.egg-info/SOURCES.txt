@@ -1,0 +1,16 @@
+README.md
+pyproject.toml
+src/turbofan_vpf/__init__.py
+src/turbofan_vpf.egg-info/PKG-INFO
+src/turbofan_vpf.egg-info/SOURCES.txt
+src/turbofan_vpf.egg-info/dependency_links.txt
+src/turbofan_vpf.egg-info/top_level.txt
+src/turbofan_vpf/analysis/pitch_sweep_incidence.py
+src/turbofan_vpf/domain/__init__.py
+src/turbofan_vpf/domain/atmosphere.py
+src/turbofan_vpf/domain/blade_kinematics.py
+src/turbofan_vpf/domain/flow_state.py
+src/turbofan_vpf/domain/incidence.py
+src/turbofan_vpf/domain/operating_condition.py
+src/turbofan_vpf/domain/operating_point.py
+src/turbofan_vpf/domain/reference_frame.py
