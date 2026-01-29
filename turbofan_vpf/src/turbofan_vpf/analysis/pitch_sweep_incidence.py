@@ -26,10 +26,10 @@ if os.environ.get("DISPLAY", "") == "":
 
 import matplotlib.pyplot as plt # pylint: disable=wrong-import-position,import-error
 
-from turbofan_vpf.domain.atmosphere import isa_atmosphere 
-from turbofan_vpf.domain.flow_state import FlowState
-from turbofan_vpf.domain.blade_kinematics import BladeKinematics 
-from turbofan_vpf.domain.incidence import compute_incidence 
+from turbofan_vpf.domain.atmosphere import isa_atmosphere  # pylint: disable=wrong-import-position
+from turbofan_vpf.domain.flow_state import FlowState # pylint: disable=wrong-import-position
+from turbofan_vpf.domain.blade_kinematics import BladeKinematics  # pylint: disable=wrong-import-position
+from turbofan_vpf.domain.incidence import compute_incidence  # pylint: disable=wrong-import-position
 
 
 
@@ -70,6 +70,10 @@ def get_results_dir() -> Path:
 
 # Definition of the main analysis routine for pitch sweep incidence evaluation
 def main() -> None:
+    """
+    Executes the pitch sweep incidence analysis for nominal and off-design
+    flow conditions and generates the corresponding incidence plot.
+    """
     # -- 1) Define operating environment (ISA) and flight condition --
     altitude_m = 11_000.0
     mach = 0.78
