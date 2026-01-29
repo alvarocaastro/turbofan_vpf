@@ -22,11 +22,9 @@ This module does NOT:
 - Perform aerodynamic or performance calculations
 - Depend on blade geometry or pitch
 - Include CFD-specific assumptions
-
 """
 
 #Imports
-
 from __future__ import annotations
 from dataclasses import dataclass
 import math
@@ -40,7 +38,6 @@ G0 = 9.80665                 # Gravitational acceleration [m/s^2]
 @dataclass(frozen=True)      # Immutable dataclass for atmospheric state
 class AtmosphereState:
     """
-
     Dataclass representing the state of the atmosphere at a given altitude.
 
     Attributes:
@@ -48,7 +45,6 @@ class AtmosphereState:
         temperature (float): Temperature [K].
         pressure (float): Pressure [Pa].
         density (float): Density [kg/m^3].
-
     """
     altitude: float         # [m]
     temperature: float      # [K]
@@ -59,12 +55,10 @@ class AtmosphereState:
 @property
 def speed_of_sound(self) -> float:
     """
-
     Calculate the speed of sound at the current atmospheric state.
 
     Returns:
         float: Speed of sound [m/s].
-
     """
     return math.sqrt(GAMMA_AIR * R_AIR * self.temperature)
 
@@ -72,9 +66,7 @@ def speed_of_sound(self) -> float:
 @property
 def dynamic_viscosity(self) -> float:
     """
-
     Returns the dynamic viscosity using Sutherland's law.
-    
     """
     T_ref = 273.15      # [K]
     mu_ref = 1.716e-5   # [Pa·s]
@@ -90,12 +82,10 @@ TROPOSPHERE_LIMIT = 11_000.0  # [m]
 #Definition of ISA atmosphere model
 def isa_atmosphere(altitude: float) -> AtmosphereState:
     """
-
     Computes the International Standard Atmosphere (ISA) porperties for the troposphere (up to 11 km).
     References:
     - ISO 2533:1975: Standard Atmosphere
     - Anderson, J.D., Introduction to Flight, 7th Edition, McGraw-Hill, 2005.
-
     """
     if not 0.0 <= altitude <= TROPOSPHERE_LIMIT:
         raise ValueError(
