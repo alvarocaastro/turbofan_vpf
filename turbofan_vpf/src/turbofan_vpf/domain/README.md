@@ -118,6 +118,23 @@ between flow definition and blade geometry.
 
 ---
 
+### `operating_point.py`
+
+Defines named operating points (e.g. cruise, takeoff, climb) that provide
+contextual meaning to operating conditions.
+
+This abstraction is used to label and organize parametric studies without
+introducing additional physical modeling assumptions.
+
+---
+
+### `reference_frame.py` (conceptual)
+
+Defines angular reference-frame conventions used in the project. This module
+is included for conceptual clarity and future extensibility but is not
+actively used in the current 2D sectional analysis.
+
+---
 ## Typical Use Within the Project
 
 The domain layer is used as the foundation for:

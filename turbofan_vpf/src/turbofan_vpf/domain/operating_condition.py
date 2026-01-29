@@ -100,7 +100,6 @@ class OperatingCondition:
         return self.flow_state.mach_number
 
     #Definition of the Reynolds number based on a characteristic length
-    @property
     def reynolds_number(self, characteristic_length: float) -> float:
         """
         Computes the Reynolds number for the current operating condition.
