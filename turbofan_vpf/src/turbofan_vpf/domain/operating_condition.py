@@ -15,12 +15,13 @@ This module does NOT perform aerodynamic or performance calculations.
 from __future__ import annotations
 from dataclasses import dataclass
 import math
+from typing import Optional
 
 from .atmosphere import AtmosphereState
 from .flow_state import FlowState
 from .blade_kinematics import BladeKinematics
 from .incidence import compute_incidence
-
+from .operating_point import OperatingPoint
 
 @dataclass(frozen=True)
 class OperatingCondition:
@@ -40,6 +41,9 @@ class OperatingCondition:
     atmosphere: AtmosphereState
     flow_state: FlowState
     blade_kinematics: BladeKinematics
+
+    # Optional association to a named operating point
+    operating_point: Optional[OperatingPoint] = None
 
     # Definition of a global physical consistency check for the operating
     # condition
