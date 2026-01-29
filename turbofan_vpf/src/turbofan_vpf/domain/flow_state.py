@@ -37,92 +37,82 @@ GAMMA_AIR = 1.4              # Ratio of specific heats [-]
 R_AIR = 287.05               # Specific gas constant for air [J/(kg·K)]
 
 #Definition of dataclass for flow state
-@dataclass(frozen=True)      # Immutable dataclass for flow state
+@dataclass(frozen=True)
 class FlowState:
     """
     Dataclass representing the state of a compressible flow.
-
-    Attributes:
-        velocity (float): Flow speed magnitude [m/s].
-        flow_angle (float): Absolute flow direction [rad].
-        static_pressure (float): Static pressure [Pa].
-        static_temperature (float): Static temperature [K].
-        density (float): Flow density [kg/m^3].
     """
+
     velocity: float              # [m/s]
     flow_angle: float            # [rad]
     static_pressure: float       # [Pa]
     static_temperature: float    # [K]
     density: float               # [kg/m^3]
 
-#Definition of a physical validation for flow state
-def validate(self) -> None:
-    """
-    Validate the physical consistency of the flow state.
+    #Definition of method to validate physical consistency
+    def validate(self) -> None:
+        """
+        Validate the physical consistency of the flow state.
+        """
+        if self.velocity < 0.0:
+            raise ValueError("Velocity must be non-negative.")
+        if self.static_pressure <= 0.0:
+            raise ValueError("Static pressure must be positive.")
+        if self.static_temperature <= 0.0:
+            raise ValueError("Static temperature must be positive.")
+        if self.density <= 0.0:
+            raise ValueError("Density must be positive.")
 
-    Raises:
-        ValueError: If any physical property is out of realistic bounds.
-    """
-    if self.velocity < 0.0:
-        raise ValueError("Velocity must be non-negative.")
-    if self.static_pressure <= 0.0:
-        raise ValueError("Static pressure must be positive.")
-    if self.static_temperature <= 0.0:
-        raise ValueError("Static temperature must be positive.")
-    if self.density <= 0:
-        raise ValueError("Density must be positive.")
-    
-#Definition of property to calculate Mach number
-@property
-def mach_number(self) -> float:
-    """
-    Calculate the Mach number of the flow.
+    #Definition of property to calculate Mach number
+    @property
+    def mach_number(self) -> float:
+        """
+        Returns the Mach number of the flow.
+        """
+        speed_of_sound = math.sqrt(GAMMA_AIR * R_AIR * self.static_temperature)
+        return self.velocity / speed_of_sound
 
-    Returns:
-        float: Mach number [-].
-    """
-    speed_of_sound = math.sqrt(GAMMA_AIR * R_AIR * self.static_temperature)
-    return self.velocity / speed_of_sound
+    #Definition of property to calculate total temperature
+    @property
+    def total_temperature(self) -> float:
+        """
+        Returns the total (stagnation) temperature assuming isentropic flow.
+        """
+        return self.static_temperature * (
+            1.0 + (GAMMA_AIR - 1.0) / 2.0 * self.mach_number**2
+        )
 
-#Definition of property to calculate total temperature
-@property
-def total_temperature(self) -> float:
-    """
-    Calculate the total (stagnation) temperature assuming isoentropic flow.
+    #Definition of property to calculate total pressure
+    @property
+    def total_pressure(self) -> float:
+        """
+        Returns the total (stagnation) pressure assuming isentropic flow.
+        """
+        return self.static_pressure * (
+            1.0 + (GAMMA_AIR - 1.0) / 2.0 * self.mach_number**2
+        ) ** (GAMMA_AIR / (GAMMA_AIR - 1.0))
 
-    Returns:
-        float: Total temperature [K].
-    """
-    return self.static_temperature * (
-        1.0 + (GAMMA_AIR - 1.0) / 2.0 * self.mach_number ** 2
-    )
+    def reynolds_number(
+        self,
+        characteristic_length: float,
+        dynamic_viscosity: float,
+    ) -> float:
+        """
+        Computes the Reynolds number based on a characteristic length.
 
-#Definition of property to calculate total pressure
-@property
-def total_pressure(self) -> float:
-    """
-    Calculate the total (stagnation) pressure assuming isoentropic flow.
+        Args:
+            characteristic_length: Reference length [m].
+            dynamic_viscosity: Dynamic viscosity [Pa·s].
 
-    Returns:
-        float: Total pressure [Pa].
-    """
-    return self.static_pressure * (
-        1.0 + (GAMMA_AIR - 1.0) / 2.0 * self.mach_number ** 2
-    ) ** (GAMMA_AIR / (GAMMA_AIR - 1.0))
+        Returns:
+            Reynolds number [-].
+        """
+        if characteristic_length <= 0.0:
+            raise ValueError("Characteristic length must be positive.")
+        if dynamic_viscosity <= 0.0:
+            raise ValueError("Dynamic viscosity must be positive.")
 
-#Definition of property to calculate Reynolds number based on a characteristic length
-@property
-def reynolds_number(self, characteristic_length: float, dynamic_viscosity: float) -> float:
-    """
-    Calculate the Reynolds number based on a characteristic length.
-
-    Args:
-        characteristic_length (float): Characteristic length [m].
-
-    Returns:
-        float: Reynolds number [-].
-    """
-    if characteristic_length <= 0.0:
-        raise ValueError("Characteristic length must be positive.")
-
-    return (self.density * self.velocity * characteristic_length / dynamic_viscosity)
+        return (
+            self.density * self.velocity * characteristic_length
+            / dynamic_viscosity
+        )
