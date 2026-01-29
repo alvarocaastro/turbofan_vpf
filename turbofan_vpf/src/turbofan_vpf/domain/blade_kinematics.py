@@ -132,6 +132,7 @@ class BladeKinematics:
         kin.validate()
         return kin
     
+    #Definition of method to generate a pitch sweep at fixed stagger and r/R
     @staticmethod
     def pitch_sweep(
         *,
