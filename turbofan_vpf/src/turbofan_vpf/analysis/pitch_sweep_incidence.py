@@ -95,7 +95,7 @@ def main() -> None:
     )
 
     # -- 2) Define a representative blade section (outer fan region) --
-    r_over_R = 0.90
+    r_over_R = 0.90 # pylint: disable=invalid-name
 
     # Choose stagger so that incidence is 0 deg at nominal when pitch = 0 deg:
     # incidence = flow_angle - (stagger + pitch)
@@ -139,7 +139,8 @@ def main() -> None:
         print("Result: Compensation is feasible within the selected ±8° pitch authority.")
     else:
         print(
-            "Result: Required pitch exceeds ±8° -> compensation not feasible within this pitch authority."
+            "Result: Required pitch exceeds ±8° -> compensation not " \
+            "feasible within this pitch authority."
         )
 
     # -- 6) Plot results --
@@ -151,7 +152,11 @@ def main() -> None:
     plt.axvline(0.0, linewidth=1.0)
 
     # Mark the pitch that recovers i = 0 under off-design flow
-    plt.scatter([pitch_to_zero_off_design_deg], [0.0], marker="o", label="Pitch for i=0 (off-design)")
+    plt.scatter(
+        [pitch_to_zero_off_design_deg],
+        [0.0], marker="o",
+        label="Pitch for i=0 (off-design)"
+    )
 
     plt.xlabel("Blade pitch angle [deg]")
     plt.ylabel("Blade incidence angle [deg]")
