@@ -28,9 +28,6 @@ This module does NOT:
 from __future__ import annotations
 from dataclasses import dataclass
 import math
-from turtle import speed
-
-from turbofan_vpf.src.turbofan_vpf.domain.atmosphere import speed_of_sound
 
 #Physical constants (SI units)
 GAMMA_AIR = 1.4              # Ratio of specific heats [-]
